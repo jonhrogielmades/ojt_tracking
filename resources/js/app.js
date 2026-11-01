@@ -225,7 +225,8 @@ function updateConnectionStatus() {
     const dot = status.querySelector('span:first-child');
     const label = status.querySelector('span:last-child');
     const online = navigator.onLine;
-    status.className = `status-pill ${online ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`;
+    status.classList.remove('bg-slate-100', 'text-slate-600', 'bg-emerald-50', 'text-emerald-700', 'bg-amber-50', 'text-amber-800');
+    status.classList.add(...(online ? ['bg-emerald-50', 'text-emerald-700'] : ['bg-amber-50', 'text-amber-800']));
     dot.className = `h-2 w-2 rounded-full ${online ? 'bg-emerald-500' : 'bg-amber-500'}`;
     label.textContent = online ? 'Online' : 'Offline';
 }

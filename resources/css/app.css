@@ -144,7 +144,31 @@ html.high-contrast .text-slate-600 {
     }
 
     .mobile-nav-link {
-        @apply flex min-h-11 items-center justify-center rounded-xl px-1 text-xs font-bold text-slate-500;
+        @apply flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-1.5 text-[0.68rem] leading-none font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-800;
+    }
+
+    .mobile-nav-link-active {
+        @apply text-teal-700;
+    }
+
+    .mobile-nav-icon {
+        @apply relative flex h-7 w-9 items-center justify-center rounded-xl transition;
+    }
+
+    .mobile-nav-link:hover .mobile-nav-icon {
+        @apply bg-slate-100;
+    }
+
+    .mobile-nav-link-active .mobile-nav-icon {
+        @apply bg-teal-100 text-teal-800;
+    }
+
+    .mobile-menu-link {
+        @apply flex min-h-11 items-center rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100;
+    }
+
+    .mobile-menu-link-active {
+        @apply bg-teal-50 text-teal-800;
     }
 
     .status-pill {

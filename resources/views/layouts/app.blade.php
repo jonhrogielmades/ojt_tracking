@@ -72,14 +72,17 @@
     </aside>
 
     <div class="min-h-screen lg:pl-64">
-        <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur print:hidden">
-            <div class="mx-auto flex h-16 max-w-[90rem] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-                <div class="lg:hidden"><x-app-logo compact /></div>
-                <div class="min-w-0"><p class="truncate text-sm font-semibold text-slate-500">@yield('eyebrow', 'Student workspace')</p><h1 class="truncate text-lg font-bold tracking-tight text-slate-950 sm:text-xl">@yield('page-title', 'Dashboard')</h1></div>
-                <div class="flex items-center gap-2">
+        <header aria-label="Student top bar" class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur print:hidden">
+            <div class="mx-auto flex min-h-14 max-w-[90rem] items-center gap-2 px-3 py-1.5 sm:min-h-16 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
+                <div class="shrink-0 lg:hidden"><x-app-logo compact class="[&_img]:h-9 [&_img]:w-9" /></div>
+                <div class="min-w-0 flex-1">
+                    <p class="hidden truncate text-sm font-semibold text-slate-500 sm:block">@yield('eyebrow', 'Student workspace')</p>
+                    <h1 class="truncate text-base font-bold tracking-tight text-slate-950 sm:text-xl">@yield('page-title', 'Dashboard')</h1>
+                </div>
+                <div class="flex shrink-0 items-center gap-1 sm:gap-2">
                     <details class="relative lg:hidden">
-                        <summary class="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 shadow-sm" aria-label="Accessibility options">Aa</summary>
-                        <div class="absolute right-0 mt-2 w-56 space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl">
+                        <summary class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-teal-300 hover:text-teal-700" aria-label="Accessibility options" title="Accessibility options"><x-navigation-icon name="accessibility" /></summary>
+                        <div class="fixed inset-x-3 top-16 z-50 space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-56">
                             <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Accessibility</p>
                             <label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm font-semibold text-slate-700">
                                 <input type="checkbox" data-accessibility-large-text class="h-5 w-5 rounded border-slate-300 text-teal-700 focus:ring-teal-500">
@@ -91,9 +94,11 @@
                             </label>
                         </div>
                     </details>
-                    <span id="connection-status" class="status-pill bg-slate-100 text-slate-600"><span class="h-2 w-2 rounded-full bg-slate-400"></span><span>Checking</span></span>
-                    <button type="button" data-draft-panel-open class="relative rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm hover:border-teal-300 hover:text-teal-700">
-                        Pending <span id="pending-count" class="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-amber-800">0</span>
+                    <span id="connection-status" role="status" aria-live="polite" class="status-pill min-h-11 min-w-11 justify-center bg-slate-100 px-0 text-slate-600 sm:min-w-0 sm:px-2.5"><span class="h-2 w-2 rounded-full bg-slate-400"></span><span class="sr-only sm:not-sr-only">Checking</span></span>
+                    <button type="button" data-draft-panel-open class="relative flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-teal-300 hover:text-teal-700 sm:w-auto sm:gap-2 sm:px-3" aria-label="Open pending drafts" title="Pending drafts">
+                        <x-navigation-icon name="drafts" />
+                        <span class="hidden text-xs font-bold sm:inline">Pending</span>
+                        <span id="pending-count" class="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[0.6rem] font-black leading-none text-amber-900 ring-2 ring-white sm:static sm:min-h-0 sm:min-w-0 sm:px-1.5 sm:py-0.5 sm:text-xs sm:ring-0">0</span>
                     </button>
                 </div>
             </div>
@@ -115,28 +120,43 @@
         </main>
     </div>
 
-    <nav aria-label="Mobile navigation" class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white px-1 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] lg:hidden print:hidden">
-        <a href="{{ route('dashboard') }}" @class(['mobile-nav-link', 'text-teal-700' => request()->routeIs('dashboard')])><span>Home</span></a>
-        <a href="{{ route('dtr.index') }}" @class(['mobile-nav-link', 'text-teal-700' => request()->routeIs('dtr.*')])><span>DTR</span></a>
-        <a href="{{ route('activities.index') }}" @class(['mobile-nav-link', 'text-teal-700' => request()->routeIs('activities.*')])><span>Logs</span></a>
-        <a href="{{ route('submissions.index') }}" @class(['mobile-nav-link', 'text-teal-700' => request()->routeIs('submissions.*')])><span>Submit</span></a>
+    <nav aria-label="Mobile navigation" class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 px-1 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden print:hidden">
+        <a href="{{ route('dashboard') }}" @class(['mobile-nav-link group', 'mobile-nav-link-active' => request()->routeIs('dashboard')]) @if (request()->routeIs('dashboard')) aria-current="page" @endif>
+            <span class="mobile-nav-icon"><x-navigation-icon name="home" /></span>
+            <span>Home</span>
+        </a>
+        <a href="{{ route('dtr.index') }}" @class(['mobile-nav-link group', 'mobile-nav-link-active' => request()->routeIs('dtr.*')]) @if (request()->routeIs('dtr.*')) aria-current="page" @endif>
+            <span class="mobile-nav-icon"><x-navigation-icon name="clock" /></span>
+            <span>DTR</span>
+        </a>
+        <a href="{{ route('activities.index') }}" @class(['mobile-nav-link group', 'mobile-nav-link-active' => request()->routeIs('activities.*')]) @if (request()->routeIs('activities.*')) aria-current="page" @endif>
+            <span class="mobile-nav-icon"><x-navigation-icon name="logs" /></span>
+            <span>Logs</span>
+        </a>
+        <a href="{{ route('submissions.index') }}" @class(['mobile-nav-link group', 'mobile-nav-link-active' => request()->routeIs('submissions.*')]) @if (request()->routeIs('submissions.*')) aria-current="page" @endif>
+            <span class="mobile-nav-icon"><x-navigation-icon name="submit" /></span>
+            <span>Submit</span>
+        </a>
         <details class="group relative">
-            <summary @class(['mobile-nav-link cursor-pointer list-none', 'text-teal-700' => request()->routeIs('student.*', 'announcements.*', 'reports.*', 'documents.*', 'profile.*', 'corrections.*')])>
-                <span class="relative">More
+            <summary @class(['mobile-nav-link cursor-pointer list-none', 'mobile-nav-link-active' => request()->routeIs('student.*', 'announcements.*', 'reports.*', 'documents.*', 'profile.*', 'corrections.*')]) @if (request()->routeIs('student.*', 'announcements.*', 'reports.*', 'documents.*', 'profile.*', 'corrections.*')) aria-current="page" @endif>
+                <span class="mobile-nav-icon">
+                    <x-navigation-icon name="more" />
                     @if ($unreadNotificationCount > 0)
-                        <span class="absolute -right-3 -top-2 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-white"><span class="sr-only">{{ $unreadNotificationCount }} unread notifications</span></span>
+                        <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-amber-500 ring-2 ring-white"><span class="sr-only">{{ $unreadNotificationCount }} unread notifications</span></span>
                     @endif
                 </span>
+                <span>More</span>
             </summary>
-            <div class="absolute bottom-full right-1 mb-3 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
-                <a href="{{ route('announcements.index') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Announcements</a>
-                <a href="{{ route('student.notifications') }}" class="flex min-h-11 items-center justify-between rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100"><span>Feedback & notifications</span>@if ($unreadNotificationCount > 0)<span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900">{{ min($unreadNotificationCount, 99) }}</span>@endif</a>
-                <a href="{{ route('student.calendar') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Calendar</a>
-                <a href="{{ route('student.progress') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Progress forecast</a>
-                <a href="{{ route('student.portfolio') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Skills portfolio</a>
-                <a href="{{ route('reports.monthly') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Reports</a>
-                <a href="{{ route('documents.index') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Documents</a>
-                <a href="{{ route('profile.edit') }}" class="flex min-h-11 items-center rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-100">Profile & placement</a>
+            <div class="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] max-h-[min(70dvh,32rem)] overflow-y-auto rounded-3xl border border-slate-200 bg-white p-2 shadow-2xl">
+                <div class="px-3 pb-2 pt-1"><p class="text-xs font-black uppercase tracking-[0.16em] text-slate-400">More tools</p></div>
+                <a href="{{ route('announcements.index') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('announcements.*')]) @if (request()->routeIs('announcements.*')) aria-current="page" @endif>Announcements</a>
+                <a href="{{ route('student.notifications') }}" @class(['mobile-menu-link justify-between', 'mobile-menu-link-active' => request()->routeIs('student.notifications*')]) @if (request()->routeIs('student.notifications*')) aria-current="page" @endif><span>Feedback & notifications</span>@if ($unreadNotificationCount > 0)<span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900">{{ min($unreadNotificationCount, 99) }}</span>@endif</a>
+                <a href="{{ route('student.calendar') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('student.calendar')]) @if (request()->routeIs('student.calendar')) aria-current="page" @endif>Calendar</a>
+                <a href="{{ route('student.progress') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('student.progress')]) @if (request()->routeIs('student.progress')) aria-current="page" @endif>Progress forecast</a>
+                <a href="{{ route('student.portfolio') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('student.portfolio')]) @if (request()->routeIs('student.portfolio')) aria-current="page" @endif>Skills portfolio</a>
+                <a href="{{ route('reports.monthly') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('reports.*')]) @if (request()->routeIs('reports.*')) aria-current="page" @endif>Reports</a>
+                <a href="{{ route('documents.index') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('documents.*')]) @if (request()->routeIs('documents.*')) aria-current="page" @endif>Documents</a>
+                <a href="{{ route('profile.edit') }}" @class(['mobile-menu-link', 'mobile-menu-link-active' => request()->routeIs('profile.*')]) @if (request()->routeIs('profile.*')) aria-current="page" @endif>Profile & placement</a>
             </div>
         </details>
     </nav>

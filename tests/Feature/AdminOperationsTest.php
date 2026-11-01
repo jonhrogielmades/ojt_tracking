@@ -150,6 +150,25 @@ class AdminOperationsTest extends TestCase
         $this->assertSame('pending', $newerPendingDocument->refresh()->review_status);
     }
 
+    public function test_document_officer_downloads_student_document_from_configured_private_disk(): void
+    {
+        Storage::fake('private-documents');
+        config()->set('ojt.documents.disk', 'private-documents');
+        $officer = User::factory()->documentOfficer()->create();
+        $student = User::factory()->create();
+        $document = StudentDocument::factory()->for($student)->create([
+            'storage_path' => "ojt-documents/{$student->id}/evaluation.pdf",
+            'original_name' => 'evaluation.pdf',
+            'mime_type' => 'application/pdf',
+        ]);
+        Storage::disk('private-documents')->put($document->storage_path, 'private evaluation');
+
+        $this->actingAs($officer)
+            ->get(route('admin.document_reviews.download', $document))
+            ->assertOk()
+            ->assertDownload('evaluation.pdf');
+    }
+
     public function test_coordinator_can_review_weekly_submissions_and_correction_requests(): void
     {
         Notification::fake();

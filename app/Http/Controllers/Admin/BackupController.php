@@ -20,8 +20,9 @@ class BackupController extends Controller
             ->with('creator:id,name,email,deleted_at')
             ->latest('id')
             ->paginate(20);
+        $backupsEnabled = (bool) config('ojt.backups.enabled', true);
 
-        return view('admin.backups.index', compact('backups'));
+        return view('admin.backups.index', compact('backups', 'backupsEnabled'));
     }
 
     public function store(
@@ -29,6 +30,12 @@ class BackupController extends Controller
         AuditLogger $auditLogger,
     ): RedirectResponse {
         Gate::authorize('create', DatabaseBackup::class);
+
+        if (! config('ojt.backups.enabled', true)) {
+            return back()->withErrors([
+                'backup' => 'Database backups are disabled for this deployment. Configure durable backup storage before enabling them.',
+            ]);
+        }
 
         try {
             $backup = $backupService->create(request()->user());

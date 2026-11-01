@@ -12,6 +12,12 @@ OJT Tracker is a Laravel Progressive Web App for student daily time records, act
 
 This project was built with Laravel 13, Tailwind CSS 4, and the PHP 8.3/MySQL 8 toolchain included with Laragon.
 
+## Render Free deployment
+
+The repository includes a Docker image, Render Blueprint, PostgreSQL configuration, automatic migrations, one-time administrator bootstrap, and a GitHub Actions fallback for daily reminders. Follow the complete [Render Free deployment and database guide](docs/RENDER_DEPLOYMENT.md).
+
+Render Free is appropriate for demonstrations and short-lived pilots. Its web services sleep, free PostgreSQL databases expire, and the local filesystem is ephemeral; read the limitations and backup steps in the guide before storing real student records.
+
 ## Laragon setup on Windows
 
 Open **Laragon Terminal** so `php`, `composer`, `mysql`, `node`, and `npm` use Laragon's configured versions. Then change to the project directory:

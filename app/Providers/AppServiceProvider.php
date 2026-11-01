@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -26,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        TrustProxies::at(config('app.trusted_proxies', '*'));
+
+        if (config('app.force_https')) {
+            URL::forceScheme('https');
+        }
+
         Model::preventLazyLoading(! app()->isProduction());
 
         RateLimiter::for('login', function (Request $request): Limit {
@@ -57,6 +65,9 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(30)->by($student.'|'.$request->ip());
         });
+
+        RateLimiter::for('render-reminders', fn (Request $request): Limit => Limit::perMinute(3)
+            ->by('render-reminders|'.$request->ip()));
 
         Gate::define('manage-administrators', fn (User $user): bool => $user->hasCapability('administrators.manage'));
         Gate::define('view-system-health', fn (User $user): bool => $user->hasCapability('system-health.view'));

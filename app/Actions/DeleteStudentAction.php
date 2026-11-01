@@ -18,7 +18,9 @@ class DeleteStudentAction
             $student->forceDelete();
         });
 
-        Storage::disk('local')->deleteDirectory("ojt-documents/{$studentId}");
-        Storage::disk('local')->deleteDirectory("activity-attachments/{$studentId}");
+        Storage::disk((string) config('ojt.documents.disk', 'local'))
+            ->deleteDirectory("ojt-documents/{$studentId}");
+        Storage::disk((string) config('ojt.attachments.disk', 'local'))
+            ->deleteDirectory("activity-attachments/{$studentId}");
     }
 }

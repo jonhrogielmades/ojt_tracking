@@ -12,6 +12,8 @@ Schedule::command('students:send-reminders')
     ->dailyAt('18:00')
     ->withoutOverlapping();
 
-Schedule::command('backup:create --prune')
-    ->dailyAt('02:00')
-    ->withoutOverlapping();
+if (config('ojt.backups.enabled', true)) {
+    Schedule::command('backup:create --prune')
+        ->dailyAt('02:00')
+        ->withoutOverlapping();
+}

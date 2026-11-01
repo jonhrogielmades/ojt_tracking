@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\DatabaseBackupService;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use Mockery\MockInterface;
 use PDO;
 use Tests\TestCase;
 
@@ -135,5 +136,28 @@ class AuditAndBackupTest extends TestCase
         $coordinator = User::factory()->ojtCoordinator()->create();
 
         $this->actingAs($coordinator)->get(route('admin.backups.index'))->assertForbidden();
+    }
+
+    public function test_disabled_backups_hide_creation_and_reject_direct_requests(): void
+    {
+        config()->set('ojt.backups.enabled', false);
+        $administrator = User::factory()->superAdmin()->create();
+        $this->mock(DatabaseBackupService::class, function (MockInterface $mock): void {
+            $mock->shouldNotReceive('create');
+        });
+
+        $this->actingAs($administrator)
+            ->get(route('admin.backups.index'))
+            ->assertOk()
+            ->assertSee('Database backup creation is disabled')
+            ->assertSee('Disabled')
+            ->assertDontSee('Create database backup');
+
+        $this->actingAs($administrator)
+            ->post(route('admin.backups.store'))
+            ->assertRedirect()
+            ->assertSessionHasErrors('backup');
+
+        $this->assertDatabaseCount('database_backups', 0);
     }
 }

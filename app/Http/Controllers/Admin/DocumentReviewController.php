@@ -89,9 +89,10 @@ class DocumentReviewController extends Controller
     public function download(StudentDocument $document): StreamedResponse
     {
         Gate::authorize('review', $document);
-        abort_unless(Storage::disk('local')->exists($document->storage_path), 404);
+        $documentDisk = Storage::disk((string) config('ojt.documents.disk', 'local'));
+        abort_unless($documentDisk->exists($document->storage_path), 404);
 
-        return Storage::disk('local')->download(
+        return $documentDisk->download(
             $document->storage_path,
             $document->original_name,
             ['Content-Type' => $document->mime_type],

@@ -54,6 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'force_https' => (bool) env('APP_FORCE_HTTPS', false),
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', '*'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

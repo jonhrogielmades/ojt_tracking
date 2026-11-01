@@ -83,10 +83,11 @@ class ActivityLogController extends Controller
         }
 
         $newAttachmentPath = null;
+        $attachmentDisk = $this->attachmentDisk();
 
         if ($request->hasFile('attachment')) {
             $attachment = $request->file('attachment');
-            $newAttachmentPath = $attachment->store("activity-attachments/{$user->id}", 'local');
+            $newAttachmentPath = $attachment->store("activity-attachments/{$user->id}", $attachmentDisk);
             $data += [
                 'attachment_path' => $newAttachmentPath,
                 'attachment_original_name' => $attachment->getClientOriginalName(),
@@ -99,7 +100,7 @@ class ActivityLogController extends Controller
             $activity = $user->activityLogs()->create($data);
         } catch (QueryException $exception) {
             if ($newAttachmentPath !== null) {
-                Storage::disk('local')->delete($newAttachmentPath);
+                Storage::disk($attachmentDisk)->delete($newAttachmentPath);
             }
 
             $existingActivity = ActivityLog::query()
@@ -114,7 +115,7 @@ class ActivityLogController extends Controller
             throw $exception;
         } catch (Throwable $exception) {
             if ($newAttachmentPath !== null) {
-                Storage::disk('local')->delete($newAttachmentPath);
+                Storage::disk($attachmentDisk)->delete($newAttachmentPath);
             }
 
             throw $exception;
@@ -148,10 +149,11 @@ class ActivityLogController extends Controller
         $data['request_fingerprint'] = $fingerprint->activity($data);
         $oldAttachmentPath = $activity->attachment_path;
         $newAttachmentPath = null;
+        $attachmentDisk = $this->attachmentDisk();
 
         if ($request->hasFile('attachment')) {
             $attachment = $request->file('attachment');
-            $newAttachmentPath = $attachment->store("activity-attachments/{$activity->user_id}", 'local');
+            $newAttachmentPath = $attachment->store("activity-attachments/{$activity->user_id}", $attachmentDisk);
             $data += [
                 'attachment_path' => $newAttachmentPath,
                 'attachment_original_name' => $attachment->getClientOriginalName(),
@@ -171,14 +173,14 @@ class ActivityLogController extends Controller
             $activity->update($data);
         } catch (Throwable $exception) {
             if ($newAttachmentPath !== null) {
-                Storage::disk('local')->delete($newAttachmentPath);
+                Storage::disk($attachmentDisk)->delete($newAttachmentPath);
             }
 
             throw $exception;
         }
 
         if (($newAttachmentPath !== null || $request->boolean('remove_attachment')) && $oldAttachmentPath !== null) {
-            Storage::disk('local')->delete($oldAttachmentPath);
+            Storage::disk($attachmentDisk)->delete($oldAttachmentPath);
         }
 
         return to_route('activities.index')->with('success', 'Activity log updated.');
@@ -190,7 +192,7 @@ class ActivityLogController extends Controller
         Gate::authorize('delete', $activity);
 
         if ($activity->attachment_path !== null) {
-            Storage::disk('local')->delete($activity->attachment_path);
+            Storage::disk($this->attachmentDisk())->delete($activity->attachment_path);
         }
 
         $activity->delete();
@@ -202,9 +204,10 @@ class ActivityLogController extends Controller
     {
         $this->ownedActivity($request, $activity);
         Gate::authorize('view', $activity);
-        abort_if($activity->attachment_path === null || ! Storage::disk('local')->exists($activity->attachment_path), 404);
+        $attachmentDisk = Storage::disk($this->attachmentDisk());
+        abort_if($activity->attachment_path === null || ! $attachmentDisk->exists($activity->attachment_path), 404);
 
-        return Storage::disk('local')->download(
+        return $attachmentDisk->download(
             $activity->attachment_path,
             $activity->attachment_original_name,
             ['Content-Type' => $activity->attachment_mime_type ?? 'application/octet-stream'],
@@ -217,6 +220,11 @@ class ActivityLogController extends Controller
         abort_unless($user instanceof User && $activity->user_id === $user->id, 404);
 
         return $user;
+    }
+
+    private function attachmentDisk(): string
+    {
+        return (string) config('ojt.attachments.disk', 'local');
     }
 
     private function activityReplayResponse(

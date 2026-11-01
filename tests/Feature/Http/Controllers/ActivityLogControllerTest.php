@@ -13,6 +13,23 @@ class ActivityLogControllerTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_activity_attachments_use_the_configured_private_disk(): void
+    {
+        Storage::fake('local');
+        Storage::fake('private-attachments');
+        config()->set('ojt.attachments.disk', 'private-attachments');
+        $student = User::factory()->create();
+
+        $this->actingAs($student)->post(route('activities.store'), [
+            ...$this->attachmentPayload('55555555-5555-4555-8555-555555555555'),
+            'attachment' => UploadedFile::fake()->create('evidence.pdf', 32, 'application/pdf'),
+        ])->assertRedirectToRoute('activities.index');
+
+        $activity = ActivityLog::query()->whereBelongsTo($student)->sole();
+        Storage::disk('private-attachments')->assertExists($activity->attachment_path);
+        Storage::disk('local')->assertMissing($activity->attachment_path);
+    }
+
     public function test_downloading_another_students_activity_attachment_returns_404(): void
     {
         Storage::fake('local');

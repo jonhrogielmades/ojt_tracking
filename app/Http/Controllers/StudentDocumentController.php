@@ -65,7 +65,8 @@ class StudentDocumentController extends Controller
         }
 
         $file = $request->file('document');
-        $path = $file->store("ojt-documents/{$user->id}", 'local');
+        $documentDisk = $this->documentDisk();
+        $path = $file->store("ojt-documents/{$user->id}", $documentDisk);
 
         try {
             $user->studentDocuments()->create([
@@ -78,7 +79,7 @@ class StudentDocumentController extends Controller
                 'size' => $file->getSize(),
             ]);
         } catch (Throwable $exception) {
-            Storage::disk('local')->delete($path);
+            Storage::disk($documentDisk)->delete($path);
 
             throw $exception;
         }
@@ -90,9 +91,10 @@ class StudentDocumentController extends Controller
     {
         $this->ownedDocument($request, $document);
         Gate::authorize('view', $document);
-        abort_unless(Storage::disk('local')->exists($document->storage_path), 404);
+        $documentDisk = Storage::disk($this->documentDisk());
+        abort_unless($documentDisk->exists($document->storage_path), 404);
 
-        return Storage::disk('local')->download(
+        return $documentDisk->download(
             $document->storage_path,
             $document->original_name,
             ['Content-Type' => $document->mime_type],
@@ -115,7 +117,7 @@ class StudentDocumentController extends Controller
 
             return $storagePath;
         });
-        Storage::disk('local')->delete($storagePath);
+        Storage::disk($this->documentDisk())->delete($storagePath);
 
         return to_route('documents.index')->with('success', 'Document deleted.');
     }
@@ -126,5 +128,10 @@ class StudentDocumentController extends Controller
         abort_unless($user instanceof User && $document->user_id === $user->id, 404);
 
         return $user;
+    }
+
+    private function documentDisk(): string
+    {
+        return (string) config('ojt.documents.disk', 'local');
     }
 }

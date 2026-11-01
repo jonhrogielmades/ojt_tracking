@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DtrController;
 use App\Http\Controllers\OfflineSyncController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RenderReminderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StudentDocumentController;
 use App\Models\User;
@@ -31,6 +32,10 @@ Route::bind(
     'student',
     fn (string $value): User => User::query()->students()->findOrFail($value),
 );
+
+Route::post('/internal/render/reminders', RenderReminderController::class)
+    ->middleware('throttle:render-reminders')
+    ->name('internal.render.reminders');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');

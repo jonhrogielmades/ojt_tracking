@@ -29,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ? route('admin.dashboard')
                 : route('dashboard'),
         );
+        $middleware->trustProxies();
+        $middleware->validateCsrfTokens(except: [
+            'internal/render/reminders',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

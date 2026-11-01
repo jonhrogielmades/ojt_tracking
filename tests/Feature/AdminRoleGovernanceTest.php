@@ -95,12 +95,17 @@ class AdminRoleGovernanceTest extends TestCase
 
     public function test_only_super_administrator_can_purge_archived_student_and_private_files(): void
     {
-        Storage::fake('local');
+        Storage::fake('private-documents');
+        Storage::fake('private-attachments');
+        config()->set('ojt.documents.disk', 'private-documents');
+        config()->set('ojt.attachments.disk', 'private-attachments');
         $coordinator = User::factory()->ojtCoordinator()->create();
         $superAdministrator = User::factory()->superAdmin()->create();
         $student = User::factory()->create();
         $documentPath = "ojt-documents/{$student->id}/resume.pdf";
-        Storage::disk('local')->put($documentPath, 'private document');
+        $attachmentPath = "activity-attachments/{$student->id}/evidence.pdf";
+        Storage::disk('private-documents')->put($documentPath, 'private document');
+        Storage::disk('private-attachments')->put($attachmentPath, 'private evidence');
         $student->delete();
 
         $this->actingAs($coordinator)->delete(route('admin.students.purge', [
@@ -113,6 +118,7 @@ class AdminRoleGovernanceTest extends TestCase
 
         $response->assertRedirectToRoute('admin.students.index', ['status' => 'archived']);
         $this->assertDatabaseMissing('users', ['id' => $student->id]);
-        Storage::disk('local')->assertMissing($documentPath);
+        Storage::disk('private-documents')->assertMissing($documentPath);
+        Storage::disk('private-attachments')->assertMissing($attachmentPath);
     }
 }

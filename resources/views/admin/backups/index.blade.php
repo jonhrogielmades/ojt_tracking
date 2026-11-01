@@ -21,8 +21,19 @@
     @endphp
 
     <section class="card card-body sm:flex sm:items-center sm:justify-between sm:gap-6">
-        <div><h2 class="section-title">Create a recovery point</h2><p class="section-copy">Backups are stored privately, checksummed, and retained according to server configuration.</p></div>
-        <form method="POST" action="{{ route('admin.backups.store') }}" class="mt-4 shrink-0 sm:mt-0">@csrf<button type="submit" class="btn-primary">Create database backup</button></form>
+        <div>
+            <h2 class="section-title">Create a recovery point</h2>
+            <p class="section-copy">
+                {{ $backupsEnabled
+                    ? 'Backups are stored privately, checksummed, and retained according to server configuration.'
+                    : 'Database backup creation is disabled until durable backup storage is configured.' }}
+            </p>
+        </div>
+        @if ($backupsEnabled)
+            <form method="POST" action="{{ route('admin.backups.store') }}" class="mt-4 shrink-0 sm:mt-0">@csrf<button type="submit" class="btn-primary">Create database backup</button></form>
+        @else
+            <span class="status-pill mt-4 bg-slate-100 text-slate-700 sm:mt-0">Disabled</span>
+        @endif
     </section>
 
     <section class="mt-6 card overflow-hidden">

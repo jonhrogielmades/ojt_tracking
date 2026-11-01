@@ -2,8 +2,241 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    --color-brand-50: oklch(0.98 0.018 181);
+    --color-brand-100: oklch(0.95 0.045 181);
+    --color-brand-500: oklch(0.65 0.13 183);
+    --color-brand-600: oklch(0.55 0.115 184);
+    --color-brand-700: oklch(0.46 0.09 186);
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 36px rgba(15, 23, 42, 0.05);
+}
+
+@layer base {
+    html {
+        color-scheme: light;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        min-width: 320px;
+    }
+
+    [id] {
+        scroll-margin-top: 5rem;
+    }
+
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    [role='button'] {
+        cursor: pointer;
+    }
+
+    button:disabled,
+    [aria-disabled='true'] {
+        cursor: not-allowed;
+    }
+
+    :focus-visible {
+        outline: 3px solid color-mix(in oklab, var(--color-teal-500) 55%, transparent);
+        outline-offset: 2px;
+    }
+}
+
+html.large-text {
+    font-size: 112.5%;
+}
+
+html.high-contrast body {
+    background-color: white;
+    color: #020617;
+}
+
+html.high-contrast .card,
+html.high-contrast .stat-card,
+html.high-contrast .input {
+    border-color: #475569;
+    box-shadow: none;
+}
+
+html.high-contrast .text-slate-400,
+html.high-contrast .text-slate-500,
+html.high-contrast .text-slate-600 {
+    color: #334155;
+}
+
+@layer components {
+    .card {
+        @apply rounded-2xl border border-slate-200 bg-white shadow-card;
+    }
+
+    .card-body {
+        @apply p-5 sm:p-6;
+    }
+
+    .eyebrow {
+        @apply text-xs font-bold uppercase tracking-[0.18em] text-teal-700;
+    }
+
+    .section-title {
+        @apply text-lg font-bold tracking-tight text-slate-950 sm:text-xl;
+    }
+
+    .section-copy {
+        @apply mt-1 text-sm leading-6 text-slate-500;
+    }
+
+    .label {
+        @apply mb-1.5 block text-sm font-bold text-slate-700;
+    }
+
+    .input {
+        @apply block min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 hover:border-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 focus:outline-none;
+    }
+
+    .input-error {
+        @apply border-rose-400 focus:border-rose-500 focus:ring-rose-500/10;
+    }
+
+    .help-text {
+        @apply mt-1.5 text-xs leading-5 text-slate-500;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-ghost {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-primary {
+        @apply bg-teal-700 text-white shadow-sm hover:bg-teal-800 focus:ring-4 focus:ring-teal-500/20;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-300 bg-white text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50 focus:ring-4 focus:ring-slate-400/15;
+    }
+
+    .btn-danger {
+        @apply bg-rose-600 text-white shadow-sm hover:bg-rose-700 focus:ring-4 focus:ring-rose-500/20;
+    }
+
+    .btn-ghost {
+        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-950;
+    }
+
+    .nav-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-white;
+    }
+
+    .nav-link-active {
+        @apply bg-teal-500/10 text-teal-300 ring-1 ring-teal-400/15;
+    }
+
+    .mobile-nav-link {
+        @apply flex min-h-11 items-center justify-center rounded-xl px-1 text-xs font-bold text-slate-500;
+    }
+
+    .status-pill {
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold;
+    }
+
+    .data-table {
+        @apply min-w-full divide-y divide-slate-200 text-left text-sm;
+    }
+
+    .data-table thead {
+        @apply bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500;
+    }
+
+    .data-table th {
+        @apply px-4 py-3;
+    }
+
+    .data-table td {
+        @apply px-4 py-3.5 align-top text-slate-700;
+    }
+
+    .data-table tbody {
+        @apply divide-y divide-slate-100;
+    }
+
+    .stat-card {
+        @apply relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-card;
+    }
+
+    .signature-line {
+        @apply border-t border-slate-500 pt-2 text-center text-xs font-semibold text-slate-600;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (forced-colors: active) {
+    :focus-visible {
+        outline: 3px solid CanvasText;
+    }
+
+    .card,
+    .input,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        border: 1px solid CanvasText;
+    }
+}
+
+@media print {
+    @page {
+        margin: 14mm;
+        size: A4;
+    }
+
+    body {
+        background: white !important;
+        color: #0f172a !important;
+        font-size: 10pt;
+    }
+
+    main {
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 6px 8px !important;
+    }
+
+    a {
+        text-decoration: none !important;
+    }
 }

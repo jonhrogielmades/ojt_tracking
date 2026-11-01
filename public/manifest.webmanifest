@@ -1,0 +1,23 @@
+{
+    "id": "/",
+    "name": "OJT Tracker for Students",
+    "short_name": "OJT Tracker",
+    "description": "Student-only daily time record, activity log, training hour, and OJT report tracker.",
+    "start_url": "/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#f1f5f9",
+    "theme_color": "#0f766e",
+    "categories": ["education", "productivity"],
+    "icons": [
+        { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "Add DTR entry", "short_name": "New DTR", "url": "/dtr/create", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Add activity", "short_name": "New activity", "url": "/activities/create", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    ]
+}

@@ -16,6 +16,16 @@ class DeploymentConfigurationTest extends TestCase
         $this->assertTrue(config('filesystems.disks.s3.report'));
     }
 
+    public function test_render_blueprint_keeps_public_onrender_subdomain_enabled(): void
+    {
+        $blueprint = (string) file_get_contents(base_path('render.yaml'));
+
+        $this->assertStringContainsStringIgnoringLineEndings(
+            "    renderSubdomainPolicy: enabled\n",
+            $blueprint,
+        );
+    }
+
     public function test_trusted_proxy_headers_are_used_for_generated_redirects(): void
     {
         $this->withHeaders([

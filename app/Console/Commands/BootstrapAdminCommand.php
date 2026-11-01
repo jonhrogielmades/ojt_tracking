@@ -55,13 +55,15 @@ class BootstrapAdminCommand extends Command
         });
 
         if ($validator->fails()) {
-            $this->components->error('The initial administrator configuration is invalid.');
+            $this->components->warn('The initial administrator configuration is invalid; administrator creation was skipped.');
 
             foreach ($validator->errors()->all() as $message) {
                 $this->line(" - {$message}");
             }
 
-            return SymfonyCommand::FAILURE;
+            $this->components->warn('Fix INITIAL_ADMIN_NAME, INITIAL_ADMIN_EMAIL, and INITIAL_ADMIN_PASSWORD, then redeploy to create the first administrator.');
+
+            return SymfonyCommand::SUCCESS;
         }
 
         User::query()->create([

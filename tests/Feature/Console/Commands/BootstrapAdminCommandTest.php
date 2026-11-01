@@ -47,17 +47,18 @@ class BootstrapAdminCommandTest extends TestCase
         $this->assertTrue(Hash::check('Strong-Initial-Password-2026!', $administrator->password));
     }
 
-    public function test_it_fails_without_creating_a_user_when_configuration_is_incomplete_or_invalid(): void
+    public function test_it_skips_creation_without_failing_startup_when_email_is_invalid(): void
     {
         config()->set('ojt.bootstrap_admin', [
             'name' => 'Initial Administrator',
             'email' => 'not-an-email',
-            'password' => '',
+            'password' => 'Strong-Initial-Password-2026!',
         ]);
 
         $this->artisan('admin:bootstrap')
-            ->expectsOutputToContain('configuration is invalid')
-            ->assertFailed();
+            ->expectsOutputToContain('administrator creation was skipped')
+            ->expectsOutputToContain('email field must be a valid email address')
+            ->assertSuccessful();
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -72,7 +73,7 @@ class BootstrapAdminCommandTest extends TestCase
 
         $this->artisan('admin:bootstrap')
             ->expectsOutputToContain('password is still a placeholder')
-            ->assertFailed();
+            ->assertSuccessful();
 
         $this->assertDatabaseCount('users', 0);
     }

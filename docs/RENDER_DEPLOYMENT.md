@@ -177,6 +177,7 @@ The bootstrap command:
 - Validates the name, email, and password.
 - Never replaces or resets an existing administrator.
 - Does nothing when all three initial administrator variables are absent.
+- Reports invalid or incomplete bootstrap values and skips administrator creation without taking the web service offline. Correct all three values and redeploy to create the first administrator.
 
 After the first successful login, delete `INITIAL_ADMIN_PASSWORD` from Render and redeploy. Keeping a reusable plaintext bootstrap password in environment settings is unnecessary risk.
 
